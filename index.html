@@ -1,903 +1,359 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kadro Kurucu Pro</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap');
-
-        :root {
-            --green-dark: #1a5c1e;
-            --green-mid: #2e7d32;
-            --green-light: #388e3c;
-            --pitch-line: rgba(255,255,255,0.65);
-            --bg: #0d0d0d;
-            --card: #181818;
-            --card2: #222;
-            --accent: #f5c518;
-            --accent2: #e53935;
-            --text: #f0f0f0;
-            --sub: #aaa;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Nunito', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-image: radial-gradient(ellipse at top, #1a2e1a 0%, #0d0d0d 60%);
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 22px;
-        }
-
-        header h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.8em;
-            letter-spacing: 4px;
-            color: var(--accent);
-            text-shadow: 0 0 30px rgba(245,197,24,0.3);
-            line-height: 1;
-        }
-
-        header p {
-            color: var(--sub);
-            font-size: 0.85em;
-            margin-top: 4px;
-        }
-
-        /* Kontrol Paneli */
-        .controls {
-            background: var(--card);
-            border: 1px solid #2a2a2a;
-            padding: 18px 24px;
-            border-radius: 16px;
-            display: flex;
-            gap: 18px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 24px;
-            width: 100%;
-            max-width: 960px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-
-        .ctrl-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 160px;
-        }
-
-        .ctrl-group label {
-            font-size: 0.72em;
-            color: var(--sub);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .ctrl-group select,
-        .ctrl-group input[type="text"] {
-            padding: 9px 12px;
-            border-radius: 10px;
-            border: 1px solid #333;
-            background: #111;
-            color: var(--text);
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.92em;
-            font-weight: 600;
-            outline: none;
-            transition: border-color 0.2s;
-            cursor: pointer;
-        }
-
-        .ctrl-group select:focus,
-        .ctrl-group input[type="text"]:focus {
-            border-color: var(--accent);
-        }
-
-        .ctrl-group input[type="file"] { display: none; }
-
-        .file-btn {
-            background: #1e1e1e;
-            color: var(--text);
-            padding: 9px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.88em;
-            font-weight: 700;
-            text-align: center;
-            border: 1px solid #333;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .file-btn:hover { background: #2a2a2a; border-color: #555; }
-
-        /* Ana Alan */
-        .main-layout {
-            display: flex;
-            gap: 28px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        /* Saha */
-        .pitch-wrapper {
-            background: var(--card);
-            border: 1px solid #2a2a2a;
-            padding: 20px;
-            border-radius: 18px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .team-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 14px;
-        }
-
-        #teamLogo {
-            width: 52px;
-            height: 52px;
-            object-fit: contain;
-            display: none;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.7));
-            border-radius: 6px;
-        }
-
-        #teamNameDisplay {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2em;
-            letter-spacing: 3px;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-        }
-
-        .pitch {
-            width: 390px;
-            height: 560px;
-            background: repeating-linear-gradient(
-                0deg,
-                #2e7d32 0px, #2e7d32 56px,
-                #268126 56px, #268126 112px
-            );
-            border: 3px solid var(--pitch-line);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Çizgiler */
-        .pitch-lines {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .line-center-h {
-            position: absolute;
-            top: 50%; left: 0; right: 0; height: 2px;
-            background: var(--pitch-line);
-            transform: translateY(-50%);
-        }
-
-        .circle-center {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 88px; height: 88px;
-            border: 2px solid var(--pitch-line);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .dot-center {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 8px; height: 8px;
-            background: var(--pitch-line);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .box-top {
-            position: absolute;
-            top: 0; left: 50%;
-            width: 175px; height: 88px;
-            border: 2px solid var(--pitch-line);
-            border-top: none;
-            transform: translateX(-50%);
-        }
-
-        .box-bottom {
-            position: absolute;
-            bottom: 0; left: 50%;
-            width: 175px; height: 88px;
-            border: 2px solid var(--pitch-line);
-            border-bottom: none;
-            transform: translateX(-50%);
-        }
-
-        .small-box-top {
-            position: absolute;
-            top: 0; left: 50%;
-            width: 90px; height: 40px;
-            border: 2px solid var(--pitch-line);
-            border-top: none;
-            transform: translateX(-50%);
-        }
-
-        .small-box-bottom {
-            position: absolute;
-            bottom: 0; left: 50%;
-            width: 90px; height: 40px;
-            border: 2px solid var(--pitch-line);
-            border-bottom: none;
-            transform: translateX(-50%);
-        }
-
-        /* Oyuncular serbest konumlandırma */
-        #playersLayer {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-        }
-
-        .player {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: grab;
-            width: 70px;
-            transform: translate(-50%, -50%);
-            transition: filter 0.2s;
-            user-select: none;
-            z-index: 3;
-        }
-
-        .player:active { cursor: grabbing; filter: brightness(1.2); z-index: 99; }
-
-        .shirt {
-            width: 46px;
-            height: 46px;
-            background: #fff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 800;
-            font-size: 1.2em;
-            color: #222;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-            border: 2px solid rgba(255,255,255,0.8);
-            transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-            background-size: cover;
-            background-position: center;
-        }
-
-        .player:hover .shirt { transform: scale(1.18); }
-
-        .player.filled .shirt {
-            background-color: var(--accent);
-            color: #111;
-            border-color: #ffdd00;
-        }
-
-        .player.has-jersey .shirt {
-            border-radius: 10px;
-            color: #fff;
-            text-shadow: 1px 1px 3px #000, -1px -1px 3px #000;
-        }
-
-        .player-label {
-            margin-top: 5px;
-            font-size: 0.72em;
-            font-weight: 800;
-            background: rgba(0,0,0,0.82);
-            padding: 2px 8px;
-            border-radius: 20px;
-            white-space: nowrap;
-            max-width: 80px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.15);
-            letter-spacing: 0.3px;
-        }
-
-        .player.drag-over { opacity: 0.5; }
-
-        /* Yedekler */
-        .sidebar {
-            background: var(--card);
-            border: 1px solid #2a2a2a;
-            padding: 22px;
-            border-radius: 18px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.6em;
-            letter-spacing: 2px;
-            color: var(--accent);
-            margin-bottom: 14px;
-            text-align: center;
-        }
-
-        .bench-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-        }
-
-        .bench-player {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            width: 80px;
-            margin: 0 auto;
-        }
-
-        .bench-shirt {
-            width: 46px;
-            height: 46px;
-            background: #1e1e1e;
-            border: 2px dashed #444;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4em;
-            color: #555;
-            transition: all 0.2s;
-        }
-
-        .bench-player.filled .bench-shirt {
-            background: #2a2a2a;
-            border: 2px solid var(--accent);
-            color: var(--accent);
-            font-size: 1em;
-            font-weight: 800;
-            border-radius: 50%;
-        }
-
-        .bench-player:hover .bench-shirt { border-color: #888; }
-
-        .bench-label {
-            margin-top: 5px;
-            font-size: 0.72em;
-            font-weight: 700;
-            color: #777;
-            text-align: center;
-            max-width: 80px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .bench-player.filled .bench-label { color: #ccc; }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            backdrop-filter: blur(6px);
-        }
-
-        .modal {
-            background: var(--card2);
-            border: 1px solid #333;
-            padding: 28px;
-            border-radius: 18px;
-            width: 320px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-            text-align: center;
-        }
-
-        .modal h3 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8em;
-            letter-spacing: 2px;
-            color: var(--accent);
-            margin-bottom: 16px;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 11px 14px;
-            margin: 7px 0;
-            border: 1px solid #3a3a3a;
-            border-radius: 10px;
-            background: #111;
-            color: #fff;
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.95em;
-            font-weight: 600;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .modal input:focus { border-color: var(--accent); }
-
-        .modal-btns {
-            display: flex;
-            gap: 8px;
-            margin-top: 18px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 11px 0;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 800;
-            font-size: 0.88em;
-            transition: opacity 0.2s, transform 0.15s;
-        }
-
-        .btn:hover { opacity: 0.88; transform: translateY(-2px); }
-        .btn:active { transform: translateY(0); }
-
-        .btn-save { background: #2e7d32; color: #fff; }
-        .btn-remove { background: #b71c1c; color: #fff; }
-        .btn-cancel { background: #333; color: #ccc; }
-
-        .drag-hint {
-            font-size: 0.75em;
-            color: #555;
-            text-align: center;
-            margin-top: 8px;
-            letter-spacing: 0.3px;
-        }
-
-        @media (max-width: 820px) {
-            .main-layout { flex-direction: column; align-items: center; }
-            .pitch { width: 340px; height: 490px; }
-            .sidebar { width: 340px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kadro Kurucu Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap');
+:root{--pl:rgba(255,255,255,0.65);--bg:#0d0d0d;--card:#181818;--acc:#f5c518;--txt:#f0f0f0;--sub:#aaa;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding:18px;display:flex;flex-direction:column;align-items:center;background-image:radial-gradient(ellipse at top,#1a2e1a 0%,#0d0d0d 60%);}
+header{text-align:center;margin-bottom:18px;}
+header h1{font-family:'Bebas Neue',sans-serif;font-size:2.6em;letter-spacing:4px;color:var(--acc);text-shadow:0 0 30px rgba(245,197,24,.3);line-height:1;}
+header p{color:var(--sub);font-size:.82em;margin-top:4px;}
+.controls{background:var(--card);border:1px solid #2a2a2a;padding:14px 20px;border-radius:14px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;width:100%;max-width:920px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.cg{display:flex;flex-direction:column;gap:5px;min-width:145px;}
+.cg label{font-size:.70em;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.cg select,.cg input[type=text]{padding:9px 12px;border-radius:10px;border:1px solid #333;background:#111;color:var(--txt);font-family:'Nunito',sans-serif;font-size:.90em;font-weight:600;outline:none;transition:border-color .2s;}
+.cg select:focus,.cg input[type=text]:focus{border-color:var(--acc);}
+.cg input[type=file]{display:none;}
+.fbtn{background:#1e1e1e;color:var(--txt);padding:9px 14px;border-radius:10px;cursor:pointer;font-size:.86em;font-weight:700;text-align:center;border:1px solid #333;transition:all .2s;user-select:none;}
+.fbtn:hover{background:#2a2a2a;border-color:#555;}
+.sbtn{background:linear-gradient(135deg,#f5c518,#e6a800);color:#111;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:.90em;font-weight:800;border:none;letter-spacing:.5px;transition:all .2s;align-self:flex-end;box-shadow:0 4px 14px rgba(245,197,24,.3);}
+.sbtn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,197,24,.4);}
+.main{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;max-width:1100px;width:100%;}
+.pw{background:var(--card);border:1px solid #2a2a2a;padding:18px;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;}
+.th{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+#tlogo{width:52px;height:52px;object-fit:contain;display:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,.7));border-radius:6px;}
+#tname{font-family:'Bebas Neue',sans-serif;font-size:2em;letter-spacing:3px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8);}
+.pitch{width:390px;height:560px;background:repeating-linear-gradient(0deg,#2e7d32 0,#2e7d32 56px,#268126 56px,#268126 112px);border:3px solid var(--pl);border-radius:12px;position:relative;overflow:hidden;}
+.pl{position:absolute;inset:0;pointer-events:none;z-index:1;}
+.lh{position:absolute;top:50%;left:0;right:0;height:2px;background:var(--pl);transform:translateY(-50%);}
+.cc{position:absolute;top:50%;left:50%;width:88px;height:88px;border:2px solid var(--pl);border-radius:50%;transform:translate(-50%,-50%);}
+.cd{position:absolute;top:50%;left:50%;width:8px;height:8px;background:var(--pl);border-radius:50%;transform:translate(-50%,-50%);}
+.bt{position:absolute;top:0;left:50%;width:175px;height:88px;border:2px solid var(--pl);border-top:none;transform:translateX(-50%);}
+.bb{position:absolute;bottom:0;left:50%;width:175px;height:88px;border:2px solid var(--pl);border-bottom:none;transform:translateX(-50%);}
+.st{position:absolute;top:0;left:50%;width:90px;height:40px;border:2px solid var(--pl);border-top:none;transform:translateX(-50%);}
+.sb{position:absolute;bottom:0;left:50%;width:90px;height:40px;border:2px solid var(--pl);border-bottom:none;transform:translateX(-50%);}
+#pl2{position:absolute;inset:0;z-index:2;}
+.player{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:grab;width:72px;transform:translate(-50%,-50%);user-select:none;z-index:3;}
+.player:active{cursor:grabbing;z-index:99;}
+.shirt{width:46px;height:46px;background:#fff;border-radius:50%;display:flex;justify-content:center;align-items:center;font-weight:800;font-size:1.15em;color:#222;box-shadow:0 4px 14px rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.8);transition:transform .2s cubic-bezier(.34,1.56,.64,1);background-size:cover;background-position:center;flex-shrink:0;}
+.player:hover .shirt{transform:scale(1.18);}
+.player.filled .shirt{background-color:var(--acc);color:#111;border-color:#ffdd00;}
+.player.hj .shirt{border-radius:10px;color:#fff;text-shadow:1px 1px 3px #000,-1px -1px 3px #000;}
+.pname{margin-top:4px;font-size:.70em;font-weight:800;background:rgba(0,0,0,.85);padding:2px 7px;border-radius:20px;white-space:nowrap;max-width:84px;overflow:hidden;text-overflow:ellipsis;color:#fff;border:1px solid rgba(255,255,255,.12);text-align:center;}
+.ppos{font-size:.60em;font-weight:700;background:rgba(245,197,24,.15);color:var(--acc);padding:1px 6px;border-radius:20px;margin-top:2px;white-space:nowrap;max-width:84px;overflow:hidden;text-overflow:ellipsis;text-align:center;border:1px solid rgba(245,197,24,.3);}
+.ppos:empty{display:none;}
+.hint{font-size:.73em;color:#555;text-align:center;margin-top:8px;}
+.side{background:var(--card);border:1px solid #2a2a2a;padding:20px;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.6);width:275px;display:flex;flex-direction:column;}
+.side h2{font-family:'Bebas Neue',sans-serif;font-size:1.5em;letter-spacing:2px;color:var(--acc);margin-bottom:12px;text-align:center;}
+.bg2{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.bp{display:flex;flex-direction:column;align-items:center;cursor:pointer;}
+.bsh{width:44px;height:44px;background:#1e1e1e;border:2px dashed #3a3a3a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3em;color:#555;transition:all .2s;}
+.bp.filled .bsh{background:#222;border:2px solid var(--acc);color:var(--acc);font-size:.95em;font-weight:800;}
+.bp:hover .bsh{border-color:#666;}
+.blbl{margin-top:4px;font-size:.68em;font-weight:700;color:#666;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bp.filled .blbl{color:#ccc;}
+.bpos{font-size:.58em;font-weight:700;color:#f5c51880;margin-top:1px;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;justify-content:center;align-items:center;z-index:999;backdrop-filter:blur(6px);}
+.md{background:#1c1c1c;border:1px solid #333;padding:26px;border-radius:18px;width:330px;box-shadow:0 20px 60px rgba(0,0,0,.8);text-align:center;}
+.md h3{font-family:'Bebas Neue',sans-serif;font-size:1.7em;letter-spacing:2px;color:var(--acc);margin-bottom:14px;}
+.md input,.md select{width:100%;padding:10px 13px;margin:6px 0;border:1px solid #3a3a3a;border-radius:10px;background:#111;color:#fff;font-family:'Nunito',sans-serif;font-size:.93em;font-weight:600;outline:none;transition:border-color .2s;}
+.md input:focus,.md select:focus{border-color:var(--acc);}
+.md select option{background:#222;}
+.mbtns{display:flex;gap:8px;margin-top:16px;}
+.btn{flex:1;padding:11px 0;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;font-size:.87em;transition:opacity .2s,transform .15s;}
+.btn:hover{opacity:.88;transform:translateY(-2px);}
+.bsv{background:#2e7d32;color:#fff;}
+.brm{background:#b71c1c;color:#fff;}
+.bcl{background:#333;color:#ccc;}
+</style>
 </head>
 <body>
-
 <header>
-    <h1>⚽ KADRO KURUCU PRO</h1>
-    <p>Oyuncuları sürükle & bırak • Forma düzenle • Takım seç</p>
+  <h1>&#9917; KADRO KURUCU PRO</h1>
+  <p>Oyunculari surukle &amp; birak &bull; Mevki sec &bull; PNG olarak kaydet</p>
 </header>
 
 <div class="controls">
-    <div class="ctrl-group">
-        <label>Takım Seç (Süper Lig)</label>
-        <select id="teamSelect" onchange="selectTeam()">
-            <option value="">— Takım Seçin —</option>
-            <option value="galatasaray">Galatasaray</option>
-            <option value="fenerbahce">Fenerbahçe</option>
-            <option value="besiktas">Beşiktaş</option>
-            <option value="trabzonspor">Trabzonspor</option>
-            <option value="basaksehir">İstanbul Başakşehir</option>
-            <option value="sivasspor">Sivasspor</option>
-            <option value="konyaspor">Konyaspor</option>
-            <option value="antalyaspor">Antalyaspor</option>
-            <option value="kasimpasa">Kasımpaşa</option>
-            <option value="alanyaspor">Alanyaspor</option>
-            <option value="rizespor">Çaykur Rizespor</option>
-            <option value="kayserispor">Kayserispor</option>
-            <option value="samsunspor">Samsunspor</option>
-            <option value="hatayspor">Hatayspor</option>
-            <option value="ankaragücü">Ankaragücü</option>
-            <option value="goztepe">Göztepe</option>
-            <option value="bodrum">Bodrum FK</option>
-            <option value="eyupspor">Eyüpspor</option>
-        </select>
-    </div>
-    <div class="ctrl-group">
-        <label>Takım İsmi</label>
-        <input type="text" id="teamNameInput" placeholder="Takım adı girin..." oninput="updateTeamName()">
-    </div>
-    <div class="ctrl-group">
-        <label>Diziliş</label>
-        <select id="formationSelect" onchange="changeFormation()">
-            <option value="4-4-2">4-4-2</option>
-            <option value="4-3-3">4-3-3</option>
-            <option value="4-2-3-1">4-2-3-1</option>
-            <option value="3-5-2">3-5-2</option>
-            <option value="5-3-2">5-3-2</option>
-            <option value="4-1-4-1">4-1-4-1</option>
-            <option value="3-4-3">3-4-3</option>
-        </select>
-    </div>
-    <div class="ctrl-group">
-        <label>Takım Logosu</label>
-        <label class="file-btn" for="logoUpload">🖼 Logo Seç</label>
-        <input type="file" id="logoUpload" accept="image/*" onchange="loadLogo(event)">
-    </div>
-    <div class="ctrl-group">
-        <label>Forma Görseli</label>
-        <label class="file-btn" for="jerseyUpload">👕 Forma Seç</label>
-        <input type="file" id="jerseyUpload" accept="image/*" onchange="loadJersey(event)">
-    </div>
+  <div class="cg">
+    <label>Takim Ismi</label>
+    <input type="text" id="tni" placeholder="Takim adi..." oninput="updName()">
+  </div>
+  <div class="cg">
+    <label>Dizilis</label>
+    <select id="fsel" onchange="chgForm()">
+      <option value="4-4-2">4-4-2</option>
+      <option value="4-3-3">4-3-3</option>
+      <option value="4-2-3-1">4-2-3-1</option>
+      <option value="3-5-2">3-5-2</option>
+      <option value="5-3-2">5-3-2</option>
+      <option value="4-1-4-1">4-1-4-1</option>
+      <option value="3-4-3">3-4-3</option>
+    </select>
+  </div>
+  <div class="cg">
+    <label>Takim Logosu</label>
+    <label class="fbtn" for="logu">&#128444; Logo Sec</label>
+    <input type="file" id="logu" accept="image/*" onchange="loadLogo(event)">
+  </div>
+  <div class="cg">
+    <label>Forma Gorseli</label>
+    <label class="fbtn" for="jrsu">&#128085; Forma Sec</label>
+    <input type="file" id="jrsu" accept="image/*" onchange="loadJersey(event)">
+  </div>
+  <div class="cg" style="justify-content:flex-end;">
+    <label>Disa Aktar</label>
+    <button class="sbtn" onclick="savePNG()">&#128229; PNG Olarak Kaydet</button>
+  </div>
 </div>
 
-<div class="main-layout">
-    <div class="pitch-wrapper">
-        <div class="team-header">
-            <img id="teamLogo" src="" alt="Logo">
-            <div id="teamNameDisplay">TAKIM İSMİ</div>
-        </div>
-
-        <div class="pitch" id="pitch">
-            <div class="pitch-lines">
-                <div class="line-center-h"></div>
-                <div class="circle-center"></div>
-                <div class="dot-center"></div>
-                <div class="box-top"></div>
-                <div class="box-bottom"></div>
-                <div class="small-box-top"></div>
-                <div class="small-box-bottom"></div>
-            </div>
-            <div id="playersLayer"></div>
-        </div>
-        <p class="drag-hint">✦ Oyuncuları sürükleyerek sahada istediğin yere taşı</p>
+<div class="main">
+  <div class="pw" id="expArea">
+    <div class="th">
+      <img id="tlogo" src="" alt="Logo">
+      <div id="tname">TAKIM ISMI</div>
     </div>
-
-    <div class="sidebar">
-        <h2>🪑 Yedekler</h2>
-        <div class="bench-grid" id="benchContainer"></div>
+    <div class="pitch" id="pitch">
+      <div class="pl">
+        <div class="lh"></div><div class="cc"></div><div class="cd"></div>
+        <div class="bt"></div><div class="bb"></div>
+        <div class="st"></div><div class="sb"></div>
+      </div>
+      <div id="pl2"></div>
     </div>
+    <p class="hint">&#10022; Oyunculari suruklererek istedigin yere tasi</p>
+  </div>
+
+  <div class="side">
+    <h2>&#129681; Yedekler</h2>
+    <div class="bg2" id="bench"></div>
+  </div>
 </div>
 
-<div class="modal-overlay" id="playerModal">
-    <div class="modal">
-        <h3>Oyuncu Düzenle</h3>
-        <input type="text" id="playerName" placeholder="Oyuncu Adı (örn: İcardi)">
-        <input type="number" id="playerNumber" placeholder="Forma Numarası (örn: 9)" min="1" max="99">
-        <div class="modal-btns">
-            <button class="btn btn-cancel" onclick="closeModal()">İptal</button>
-            <button class="btn btn-remove" onclick="removePlayer()">Temizle</button>
-            <button class="btn btn-save" onclick="savePlayer()">Kaydet</button>
-        </div>
+<div class="mo" id="modal">
+  <div class="md">
+    <h3>Oyuncu Duzenle</h3>
+    <input type="text" id="pname" placeholder="Oyuncu Adi (orn: Icardi)">
+    <input type="number" id="pnum" placeholder="Forma Numarasi (orn: 9)" min="1" max="99">
+    <select id="ppos">
+      <option value="">&#8212; Mevki Secin &#8212;</option>
+      <option value="Kaleci">Kaleci</option>
+      <option value="Sol Bek">Sol Bek</option>
+      <option value="Stoper">Stoper</option>
+      <option value="Sag Bek">Sag Bek</option>
+      <option value="On Libero">On Libero</option>
+      <option value="Orta Saha">Orta Saha</option>
+      <option value="Ofansif OS">Ofansif Orta Saha</option>
+      <option value="Defansif OS">Defansif Orta Saha</option>
+      <option value="Sol Kanat">Sol Kanat</option>
+      <option value="Sag Kanat">Sag Kanat</option>
+      <option value="Santrafor">Santrafor</option>
+    </select>
+    <div class="mbtns">
+      <button class="btn bcl" onclick="closeM()">Iptal</button>
+      <button class="btn brm" onclick="removeP()">Temizle</button>
+      <button class="btn bsv" onclick="saveP()">Kaydet</button>
     </div>
+  </div>
 </div>
 
 <script>
-// ─── Dizilişler: satırlar aşağıdan yukarıya (kaleci → defans → ... → forvet) ───
-const formations = {
-    "4-4-2":   [[1], [4], [4], [2]],
-    "4-3-3":   [[1], [4], [3], [3]],
-    "4-2-3-1": [[1], [4], [2], [3], [1]],
-    "3-5-2":   [[1], [3], [5], [2]],
-    "5-3-2":   [[1], [5], [3], [2]],
-    "4-1-4-1": [[1], [4], [1], [4], [1]],
-    "3-4-3":   [[1], [3], [4], [3]],
+const FORMS={
+  "4-4-2":[[1],[4],[4],[2]],
+  "4-3-3":[[1],[4],[3],[3]],
+  "4-2-3-1":[[1],[4],[2],[3],[1]],
+  "3-5-2":[[1],[3],[5],[2]],
+  "5-3-2":[[1],[5],[3],[2]],
+  "4-1-4-1":[[1],[4],[1],[4],[1]],
+  "3-4-3":[[1],[3],[4],[3]]
 };
 
-// ─── Süper Lig Takımları ───────────────────────────────────────────────────────
-const superLigTeams = {
-    galatasaray:  { name: "Galatasaray",           logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Galatasaray_logo.svg/120px-Galatasaray_logo.svg.png" },
-    fenerbahce:   { name: "Fenerbahçe",             logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Fenerbahce_SK.svg/120px-Fenerbahce_SK.svg.png" },
-    besiktas:     { name: "Beşiktaş",               logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Beşiktaş_JK.svg/120px-Beşiktaş_JK.svg.png" },
-    trabzonspor:  { name: "Trabzonspor",             logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Trabzonspor_logo.svg/120px-Trabzonspor_logo.svg.png" },
-    basaksehir:   { name: "Başakşehir",              logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Istanbul_Başakşehir_logo.png/120px-Istanbul_Başakşehir_logo.png" },
-    sivasspor:    { name: "Sivasspor",               logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Sivasspor_logo.png/120px-Sivasspor_logo.png" },
-    konyaspor:    { name: "Konyaspor",               logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Konyaspor_logo.png/120px-Konyaspor_logo.png" },
-    antalyaspor:  { name: "Antalyaspor",             logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Antalyaspor_logo.png/120px-Antalyaspor_logo.png" },
-    kasimpasa:    { name: "Kasımpaşa",               logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Kasımpaşa_SK_logo.png/120px-Kasımpaşa_SK_logo.png" },
-    alanyaspor:   { name: "Alanyaspor",              logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Alanyaspor_logo.png/120px-Alanyaspor_logo.png" },
-    rizespor:     { name: "Çaykur Rizespor",         logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Rizespor_logo.png/120px-Rizespor_logo.png" },
-    kayserispor:  { name: "Kayserispor",             logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Kayserispor_logo.png/120px-Kayserispor_logo.png" },
-    samsunspor:   { name: "Samsunspor",              logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Samsunspor_logo.png/120px-Samsunspor_logo.png" },
-    hatayspor:    { name: "Hatayspor",               logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Hatayspor_logo.png/120px-Hatayspor_logo.png" },
-    ankaragücü:   { name: "Ankaragücü",              logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Ankaragücü_logo.png/120px-Ankaragücü_logo.png" },
-    goztepe:      { name: "Göztepe",                 logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Göztepe_S.K._logo.png/120px-Göztepe_S.K._logo.png" },
-    bodrum:       { name: "Bodrum FK",               logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Bodrumspor_logo.png/120px-Bodrumspor_logo.png" },
-    eyupspor:     { name: "Eyüpspor",                logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Eyüpspor_logo.png/120px-Eyüpspor_logo.png" },
-};
+let selEl=null, isBench=false, jerseyUrl=null, curForm="4-4-2", isDrag=false;
 
-// ─── Durum ────────────────────────────────────────────────────────────────────
-let selectedEl = null;
-let jerseyUrl = null;
-let currentFormation = "4-4-2";
-
-// ─── Takım Seç ────────────────────────────────────────────────────────────────
-function selectTeam() {
-    const key = document.getElementById('teamSelect').value;
-    if (!key) return;
-    const team = superLigTeams[key];
-
-    document.getElementById('teamNameInput').value = team.name;
-    document.getElementById('teamNameDisplay').textContent = team.name;
-
-    const logoEl = document.getElementById('teamLogo');
-    logoEl.src = team.logo;
-    logoEl.style.display = 'block';
-
-    // Logo yüklenme hatası durumu
-    logoEl.onerror = () => {
-        // Alternatif kaynak dene - clearbit veya placeholder
-        logoEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(team.name)}&background=1a1a1a&color=f5c518&size=80&bold=true&font-size=0.4`;
-        logoEl.onerror = null;
-    };
+function updName(){
+  const v=document.getElementById('tni').value;
+  document.getElementById('tname').textContent=v||'TAKIM ISMI';
 }
 
-// ─── Takım İsmi ───────────────────────────────────────────────────────────────
-function updateTeamName() {
-    const v = document.getElementById('teamNameInput').value;
-    document.getElementById('teamNameDisplay').textContent = v || 'TAKIM İSMİ';
+function loadLogo(e){
+  const f=e.target.files[0]; if(!f)return;
+  const img=document.getElementById('tlogo');
+  img.src=URL.createObjectURL(f); img.style.display='block';
 }
 
-// ─── Logo Yükle ───────────────────────────────────────────────────────────────
-function loadLogo(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const logoEl = document.getElementById('teamLogo');
-    logoEl.src = URL.createObjectURL(file);
-    logoEl.style.display = 'block';
+function loadJersey(e){
+  const f=e.target.files[0]; if(!f)return;
+  jerseyUrl=URL.createObjectURL(f);
+  document.querySelectorAll('.player').forEach(p=>{
+    const s=p.querySelector('.shirt');
+    if(s){s.style.backgroundImage=`url(${jerseyUrl})`;s.style.backgroundSize='cover';s.style.backgroundPosition='center';s.style.borderRadius='10px';}
+    p.classList.add('hj');
+  });
 }
 
-// ─── Forma Yükle ──────────────────────────────────────────────────────────────
-function loadJersey(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    jerseyUrl = URL.createObjectURL(file);
-    document.querySelectorAll('.player .shirt, .player').forEach(el => {
-        if (el.classList.contains('shirt')) {
-            el.style.backgroundImage = `url(${jerseyUrl})`;
-            el.style.backgroundSize = 'cover';
-            el.style.backgroundPosition = 'center';
-            el.style.borderRadius = '10px';
-        }
-        if (el.classList.contains('player')) {
-            el.classList.add('has-jersey');
-        }
-    });
+function savePNG(){
+  if(typeof html2canvas==='undefined'){alert('html2canvas yukleniyor, lutfen bekleyin.');return;}
+  const area=document.getElementById('expArea');
+  const hint=area.querySelector('.hint');
+  if(hint)hint.style.display='none';
+  html2canvas(area,{backgroundColor:'#181818',scale:2,useCORS:true,allowTaint:true,logging:false})
+  .then(canvas=>{
+    if(hint)hint.style.display='';
+    const nm=document.getElementById('tni').value.trim()||'kadro';
+    const a=document.createElement('a');
+    a.download=nm+'-kadro.png';
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+  }).catch(()=>{if(hint)hint.style.display='';alert('PNG kaydedilemedi.');});
 }
 
-// ─── Saha Render ──────────────────────────────────────────────────────────────
-function renderPitch(formKey) {
-    currentFormation = formKey;
-    const layer = document.getElementById('playersLayer');
-    layer.innerHTML = '';
-
-    const rows = formations[formKey];
-    const pitchH = 560;
-    const pitchW = 390;
-    const rowCount = rows.length;
-
-    // Satırları eşit aralıklarla dağıt
-    rows.forEach((cols, rowIdx) => {
-        const colCount = cols[0];
-        // y: alttan (kaleci) yukarıya (forvet) — ama görselde üstten başlarız
-        const yFraction = (rowIdx + 0.5) / rowCount;
-        const y = pitchH - yFraction * pitchH; // alt = kaleci
-
-        for (let col = 0; col < colCount; col++) {
-            const xFraction = (col + 1) / (colCount + 1);
-            const x = xFraction * pitchW;
-
-            const playerEl = document.createElement('div');
-            playerEl.className = 'player';
-            playerEl.style.left = x + 'px';
-            playerEl.style.top = y + 'px';
-
-            playerEl.innerHTML = `
-                <div class="shirt" style="${jerseyUrl ? `background-image:url(${jerseyUrl});background-size:cover;background-position:center;border-radius:10px;` : ''}">+</div>
-                <div class="player-label">Ekle</div>
-            `;
-
-            if (jerseyUrl) playerEl.classList.add('has-jersey');
-
-            // Tıklama: modal aç
-            playerEl.addEventListener('click', (e) => {
-                if (e.target.closest('.player') && !isDragging) {
-                    openModal(playerEl);
-                }
-            });
-
-            // Drag
-            makeDraggable(playerEl);
-
-            layer.appendChild(playerEl);
-        }
-    });
-}
-
-// ─── Sürükle-Bırak ────────────────────────────────────────────────────────────
-let isDragging = false;
-
-function makeDraggable(el) {
-    let startX, startY, origLeft, origTop;
-
-    el.addEventListener('mousedown', onDragStart);
-    el.addEventListener('touchstart', onDragStart, { passive: true });
-
-    function onDragStart(e) {
-        isDragging = false;
-        const touch = e.touches ? e.touches[0] : e;
-        const pitch = document.getElementById('pitch');
-        const rect = pitch.getBoundingClientRect();
-
-        startX = touch.clientX;
-        startY = touch.clientY;
-        origLeft = parseFloat(el.style.left);
-        origTop = parseFloat(el.style.top);
-
-        el.style.zIndex = 999;
-        el.style.transition = 'none';
-
-        document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('touchmove', onDragMove, { passive: false });
-        document.addEventListener('mouseup', onDragEnd);
-        document.addEventListener('touchend', onDragEnd);
+function renderPitch(fk){
+  curForm=fk;
+  const layer=document.getElementById('pl2');
+  layer.innerHTML='';
+  const rows=FORMS[fk], pH=560, pW=390, rC=rows.length;
+  rows.forEach((cols,ri)=>{
+    const cc=cols[0];
+    const yF=(ri+0.5)/rC;
+    const y=pH-yF*pH;
+    for(let c=0;c<cc;c++){
+      const x=(c+1)/(cc+1)*pW;
+      addPlayer(x,y,layer);
     }
-
-    function onDragMove(e) {
-        isDragging = true;
-        if (e.cancelable) e.preventDefault();
-        const touch = e.touches ? e.touches[0] : e;
-        const dx = touch.clientX - startX;
-        const dy = touch.clientY - startY;
-
-        const pitch = document.getElementById('pitch');
-        const rect = pitch.getBoundingClientRect();
-        const pitchW = rect.width;
-        const pitchH = rect.height;
-
-        let newLeft = Math.max(20, Math.min(pitchW - 20, origLeft + dx));
-        let newTop = Math.max(20, Math.min(pitchH - 20, origTop + dy));
-
-        el.style.left = newLeft + 'px';
-        el.style.top = newTop + 'px';
-    }
-
-    function onDragEnd() {
-        el.style.zIndex = 3;
-        el.style.transition = '';
-        document.removeEventListener('mousemove', onDragMove);
-        document.removeEventListener('touchmove', onDragMove);
-        document.removeEventListener('mouseup', onDragEnd);
-        document.removeEventListener('touchend', onDragEnd);
-        setTimeout(() => { isDragging = false; }, 50);
-    }
+  });
 }
 
-// ─── Diziliş Değiştir ─────────────────────────────────────────────────────────
-function changeFormation() {
-    const val = document.getElementById('formationSelect').value;
-    if (!confirm('Dizilişi değiştirmek sahadaki oyuncuları sıfırlar. Devam edilsin mi?')) {
-        document.getElementById('formationSelect').value = currentFormation;
-        return;
-    }
-    renderPitch(val);
+function addPlayer(x,y,container){
+  const el=document.createElement('div');
+  el.className='player';
+  el.style.left=x+'px';
+  el.style.top=y+'px';
+  const jSty=jerseyUrl?`background-image:url(${jerseyUrl});background-size:cover;background-position:center;border-radius:10px;`:'';
+  el.innerHTML=`<div class="shirt" style="${jSty}">+</div><div class="pname">Ekle</div><div class="ppos"></div>`;
+  if(jerseyUrl)el.classList.add('hj');
+  el.addEventListener('click',()=>{if(!isDrag)openM(el,false);});
+  drag(el);
+  container.appendChild(el);
 }
 
-// ─── Yedek Bankı ─────────────────────────────────────────────────────────────
-function renderBench() {
-    const container = document.getElementById('benchContainer');
-    container.innerHTML = '';
-    for (let i = 0; i < 7; i++) {
-        const el = document.createElement('div');
-        el.className = 'bench-player';
-        el.innerHTML = `
-            <div class="bench-shirt">+</div>
-            <div class="bench-label">Yedek</div>
-        `;
-        el.addEventListener('click', () => openModal(el, true));
-        container.appendChild(el);
-    }
+function drag(el){
+  let sx,sy,ol,ot,moved=false;
+  function start(e){
+    moved=false; isDrag=false;
+    const t=e.touches?e.touches[0]:e;
+    sx=t.clientX; sy=t.clientY;
+    ol=parseFloat(el.style.left); ot=parseFloat(el.style.top);
+    el.style.zIndex=999; el.style.transition='none';
+    document.addEventListener('mousemove',move);
+    document.addEventListener('touchmove',move,{passive:false});
+    document.addEventListener('mouseup',end);
+    document.addEventListener('touchend',end);
+  }
+  function move(e){
+    if(e.cancelable)e.preventDefault();
+    const t=e.touches?e.touches[0]:e;
+    const dx=t.clientX-sx, dy=t.clientY-sy;
+    if(!moved&&Math.sqrt(dx*dx+dy*dy)>5){moved=true;isDrag=true;}
+    if(!moved)return;
+    const p=document.getElementById('pitch').getBoundingClientRect();
+    el.style.left=Math.max(22,Math.min(p.width-22,ol+dx))+'px';
+    el.style.top=Math.max(22,Math.min(p.height-22,ot+dy))+'px';
+  }
+  function end(){
+    el.style.zIndex=3; el.style.transition='';
+    document.removeEventListener('mousemove',move);
+    document.removeEventListener('touchmove',move);
+    document.removeEventListener('mouseup',end);
+    document.removeEventListener('touchend',end);
+    setTimeout(()=>{isDrag=false;},60);
+  }
+  el.addEventListener('mousedown',start);
+  el.addEventListener('touchstart',start,{passive:true});
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
-let isBench = false;
-const modal = document.getElementById('playerModal');
-
-function openModal(el, bench = false) {
-    selectedEl = el;
-    isBench = bench;
-
-    const nameEl = el.querySelector('.player-label, .bench-label');
-    const numEl = el.querySelector('.shirt, .bench-shirt');
-
-    if (el.classList.contains('filled')) {
-        document.getElementById('playerName').value = nameEl ? nameEl.textContent : '';
-        const numTxt = numEl ? numEl.textContent : '';
-        document.getElementById('playerNumber').value = /^\d+$/.test(numTxt) ? numTxt : '';
-    } else {
-        document.getElementById('playerName').value = '';
-        document.getElementById('playerNumber').value = '';
-    }
-
-    modal.style.display = 'flex';
-    setTimeout(() => document.getElementById('playerName').focus(), 100);
+function chgForm(){
+  const v=document.getElementById('fsel').value;
+  if(!confirm('Dizilisi degistirmek sahadaki oyunculari sifirlar. Devam edilsin mi?')){
+    document.getElementById('fsel').value=curForm; return;
+  }
+  renderPitch(v);
 }
 
-function closeModal() {
-    modal.style.display = 'none';
-    selectedEl = null;
+function renderBench(){
+  const c=document.getElementById('bench'); c.innerHTML='';
+  for(let i=0;i<7;i++){
+    const el=document.createElement('div');
+    el.className='bp';
+    el.innerHTML=`<div class="bsh">+</div><div class="blbl">Yedek</div><div class="bpos"></div>`;
+    el.addEventListener('click',()=>openM(el,true));
+    c.appendChild(el);
+  }
 }
 
-function savePlayer() {
-    if (!selectedEl) return;
-    const name = document.getElementById('playerName').value.trim();
-    const number = document.getElementById('playerNumber').value.trim();
+const modal=document.getElementById('modal');
 
-    if (!name || !number) {
-        alert('Lütfen oyuncu adı ve forma numarası girin.');
-        return;
-    }
-
-    const labelEl = selectedEl.querySelector('.player-label, .bench-label');
-    const shirtEl = selectedEl.querySelector('.shirt, .bench-shirt');
-
-    if (labelEl) labelEl.textContent = name;
-    if (shirtEl) shirtEl.textContent = number;
-    selectedEl.classList.add('filled');
-
-    // Forma görseli uygula (sadece sahada)
-    if (!isBench && jerseyUrl && shirtEl) {
-        shirtEl.style.backgroundImage = `url(${jerseyUrl})`;
-        shirtEl.style.backgroundSize = 'cover';
-        shirtEl.style.backgroundPosition = 'center';
-        shirtEl.style.borderRadius = '10px';
-        selectedEl.classList.add('has-jersey');
-    }
-
-    closeModal();
+function openM(el,bench){
+  selEl=el; isBench=bench;
+  if(el.classList.contains('filled')){
+    const lb=el.querySelector('.pname,.blbl');
+    const nu=el.querySelector('.shirt,.bsh');
+    const po=el.querySelector('.ppos,.bpos');
+    document.getElementById('pname').value=lb?lb.textContent:'';
+    const nt=nu?nu.textContent:'';
+    document.getElementById('pnum').value=/^\d+$/.test(nt)?nt:'';
+    document.getElementById('ppos').value=po?po.textContent:'';
+  } else {
+    document.getElementById('pname').value='';
+    document.getElementById('pnum').value='';
+    document.getElementById('ppos').value='';
+  }
+  modal.style.display='flex';
+  setTimeout(()=>document.getElementById('pname').focus(),80);
 }
 
-function removePlayer() {
-    if (!selectedEl) return;
-    const labelEl = selectedEl.querySelector('.player-label, .bench-label');
-    const shirtEl = selectedEl.querySelector('.shirt, .bench-shirt');
+function closeM(){modal.style.display='none';selEl=null;}
 
-    if (labelEl) labelEl.textContent = isBench ? 'Yedek' : 'Ekle';
-    if (shirtEl) {
-        shirtEl.textContent = '+';
-        shirtEl.style.backgroundImage = '';
-        shirtEl.style.borderRadius = '';
-    }
-
-    selectedEl.classList.remove('filled', 'has-jersey');
-    closeModal();
+function saveP(){
+  if(!selEl)return;
+  const nm=document.getElementById('pname').value.trim();
+  const nu=document.getElementById('pnum').value.trim();
+  const po=document.getElementById('ppos').value;
+  if(!nm||!nu){alert('Lutfen oyuncu adi ve forma numarasi girin.');return;}
+  const lb=selEl.querySelector('.pname,.blbl');
+  const sh=selEl.querySelector('.shirt,.bsh');
+  const ps=selEl.querySelector('.ppos,.bpos');
+  if(lb)lb.textContent=nm;
+  if(sh)sh.textContent=nu;
+  if(ps)ps.textContent=po;
+  selEl.classList.add('filled');
+  if(!isBench&&jerseyUrl&&sh){
+    sh.style.backgroundImage=`url(${jerseyUrl})`;
+    sh.style.backgroundSize='cover';
+    sh.style.backgroundPosition='center';
+    sh.style.borderRadius='10px';
+    selEl.classList.add('hj');
+  }
+  closeM();
 }
 
-// ESC ile kapat
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-});
+function removeP(){
+  if(!selEl)return;
+  const lb=selEl.querySelector('.pname,.blbl');
+  const sh=selEl.querySelector('.shirt,.bsh');
+  const ps=selEl.querySelector('.ppos,.bpos');
+  if(lb)lb.textContent=isBench?'Yedek':'Ekle';
+  if(sh){sh.textContent='+';sh.style.backgroundImage='';sh.style.borderRadius='';}
+  if(ps)ps.textContent='';
+  selEl.classList.remove('filled','hj');
+  closeM();
+}
 
-// ─── Başlat ───────────────────────────────────────────────────────────────────
-window.addEventListener('load', () => {
-    renderPitch('4-4-2');
-    renderBench();
-});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+window.addEventListener('load',()=>{renderPitch('4-4-2');renderBench();});
 </script>
 </body>
 </html>
