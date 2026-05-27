@@ -24,19 +24,56 @@ header p{color:var(--sub);font-size:.82em;margin-top:4px;}
 .sbtn{background:linear-gradient(135deg,#f5c518,#e6a800);color:#111;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:.90em;font-weight:800;border:none;letter-spacing:.5px;transition:all .2s;align-self:flex-end;box-shadow:0 4px 14px rgba(245,197,24,.3);}
 .sbtn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,197,24,.4);}
 .main{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;max-width:1100px;width:100%;}
-.pw{background:var(--card);border:1px solid #2a2a2a;padding:18px;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;}
+.pw{background:linear-gradient(160deg,#1a3d1c 0%,#142e16 100%);border:1px solid #2a3d2a;padding:18px;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;}
 .th{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
 #tlogo{width:52px;height:52px;object-fit:contain;display:none;filter:drop-shadow(0 2px 8px rgba(0,0,0,.7));border-radius:6px;}
-#tname{font-family:'Bebas Neue',sans-serif;font-size:2em;letter-spacing:3px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.8);}
-.pitch{width:390px;height:560px;background:repeating-linear-gradient(0deg,#2e7d32 0,#2e7d32 56px,#268126 56px,#268126 112px);border:3px solid var(--pl);border-radius:12px;position:relative;overflow:hidden;}
+#tname{font-family:'Bebas Neue',sans-serif;font-size:2em;letter-spacing:3px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 20px rgba(0,0,0,0.5);}
+/* ── Gerçekçi Çim Saha ── */
+.pitch{
+  width:390px;height:560px;
+  position:relative;overflow:hidden;
+  border-radius:14px;
+  border:4px solid rgba(255,255,255,0.55);
+  box-shadow:
+    0 0 0 2px rgba(0,0,0,0.5),
+    0 20px 60px rgba(0,0,0,0.8),
+    inset 0 0 80px rgba(0,0,0,0.25);
+  /* Şeritli çim deseni */
+  background-color:#2d7a30;
+  background-image:
+    /* Çim doku gürültüsü */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='4' height='4' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
+    /* Koyu-açık yatay şeritler */
+    repeating-linear-gradient(
+      180deg,
+      rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 46px,
+      rgba(255,255,255,0.06) 46px, rgba(255,255,255,0.06) 92px
+    ),
+    /* Ana çim rengi */
+    linear-gradient(160deg, #3a9140 0%, #2d7a30 40%, #256828 70%, #1f5a23 100%);
+}
+/* Işık yansıması üstten */
+.pitch::before{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,255,255,0.10) 0%, transparent 70%);
+}
+/* Alt gölge */
+.pitch::after{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 30% at 50% 100%, rgba(0,0,0,0.20) 0%, transparent 70%);
+}
+/* Saha çizgi katmanı */
 .pl{position:absolute;inset:0;pointer-events:none;z-index:1;}
-.lh{position:absolute;top:50%;left:0;right:0;height:2px;background:var(--pl);transform:translateY(-50%);}
-.cc{position:absolute;top:50%;left:50%;width:88px;height:88px;border:2px solid var(--pl);border-radius:50%;transform:translate(-50%,-50%);}
-.cd{position:absolute;top:50%;left:50%;width:8px;height:8px;background:var(--pl);border-radius:50%;transform:translate(-50%,-50%);}
-.bt{position:absolute;top:0;left:50%;width:175px;height:88px;border:2px solid var(--pl);border-top:none;transform:translateX(-50%);}
-.bb{position:absolute;bottom:0;left:50%;width:175px;height:88px;border:2px solid var(--pl);border-bottom:none;transform:translateX(-50%);}
-.st{position:absolute;top:0;left:50%;width:90px;height:40px;border:2px solid var(--pl);border-top:none;transform:translateX(-50%);}
-.sb{position:absolute;bottom:0;left:50%;width:90px;height:40px;border:2px solid var(--pl);border-bottom:none;transform:translateX(-50%);}
+.lh{position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(255,255,255,0.70);transform:translateY(-50%);box-shadow:0 0 4px rgba(255,255,255,0.3);}
+.cc{position:absolute;top:50%;left:50%;width:90px;height:90px;border:2px solid rgba(255,255,255,0.70);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 4px rgba(255,255,255,0.2);}
+.cd{position:absolute;top:50%;left:50%;width:8px;height:8px;background:rgba(255,255,255,0.80);border-radius:50%;transform:translate(-50%,-50%);}
+.bt{position:absolute;top:0;left:50%;width:178px;height:90px;border:2px solid rgba(255,255,255,0.70);border-top:none;transform:translateX(-50%);box-shadow:0 0 4px rgba(255,255,255,0.15);}
+.bb{position:absolute;bottom:0;left:50%;width:178px;height:90px;border:2px solid rgba(255,255,255,0.70);border-bottom:none;transform:translateX(-50%);box-shadow:0 0 4px rgba(255,255,255,0.15);}
+.st{position:absolute;top:0;left:50%;width:90px;height:42px;border:2px solid rgba(255,255,255,0.70);border-top:none;transform:translateX(-50%);}
+.sb{position:absolute;bottom:0;left:50%;width:90px;height:42px;border:2px solid rgba(255,255,255,0.70);border-bottom:none;transform:translateX(-50%);}
+/* Kale direkleri */
+.goal-t{position:absolute;top:-4px;left:50%;width:52px;height:10px;border:3px solid rgba(255,255,255,0.85);border-bottom:none;transform:translateX(-50%);border-radius:3px 3px 0 0;}
+.goal-b{position:absolute;bottom:-4px;left:50%;width:52px;height:10px;border:3px solid rgba(255,255,255,0.85);border-top:none;transform:translateX(-50%);border-radius:0 0 3px 3px;}
 #pl2{position:absolute;inset:0;z-index:2;}
 .player{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:grab;width:72px;transform:translate(-50%,-50%);user-select:none;z-index:3;}
 .player:active{cursor:grabbing;z-index:99;}
@@ -122,6 +159,7 @@ header p{color:var(--sub);font-size:.82em;margin-top:4px;}
         <div class="lh"></div><div class="cc"></div><div class="cd"></div>
         <div class="bt"></div><div class="bb"></div>
         <div class="st"></div><div class="sb"></div>
+        <div class="goal-t"></div><div class="goal-b"></div>
       </div>
       <div id="pl2"></div>
     </div>
@@ -200,7 +238,7 @@ function savePNG(){
   const area=document.getElementById('expArea');
   const hint=area.querySelector('.hint');
   if(hint)hint.style.display='none';
-  html2canvas(area,{backgroundColor:'#181818',scale:2,useCORS:true,allowTaint:true,logging:false})
+  html2canvas(area,{backgroundColor:'#1a4f1d',scale:2,useCORS:true,allowTaint:true,logging:false})
   .then(canvas=>{
     if(hint)hint.style.display='';
     const nm=document.getElementById('tni').value.trim()||'kadro';
